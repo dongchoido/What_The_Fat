@@ -14,21 +14,21 @@ public class PlayerMovement : MonoBehaviour
     public float gravityScale = 3f;
     public float hoverDuration = 0.5f;
     public float jumpBufferTime = 0.2f;
-    
+
     [Header("Shooting Settings")]
     public GameObject bulletPrefab;
     public float fireRate = 0.5f;
     public Transform firePoint;
-    
+
     [Header("Ground Check")]
     public LayerMask groundLayer;
     private List<Collider2D> groundContacts = new List<Collider2D>();
-    
+
     [Header("Follow Settings")]
     public float followDelay = 0.2f;
     public float followSmoothTime = 0.1f;
     private Vector2 followVelocity;
-    
+
     public Rigidbody2D rb;
     public bool isGrounded;
     public bool isHoldingJump;
@@ -39,16 +39,18 @@ public class PlayerMovement : MonoBehaviour
     public float hoverTimer;
     private float nextFireTime;
     private float jumpBufferTimer;
-    
+
     public Transform targetToFollow;
     private Queue<Vector3> positionHistory;
     private Queue<float> timeHistory;
+
+    public bool isLocked = false; // Ngăn điều khiển khi reposition
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
-        
+
         if (!isLeader)
         {
             positionHistory = new Queue<Vector3>();
@@ -58,10 +60,12 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (isLocked) return;
+
         UpdateGroundStatus();
         HandleShooting();
         HandleJumpBuffer();
-        
+
         if (isLeader)
         {
             HandleLeaderInput();
@@ -96,7 +100,7 @@ public class PlayerMovement : MonoBehaviour
     {
         bool wasGrounded = isGrounded;
         isGrounded = groundContacts.Count > 0;
-        
+
         if (!wasGrounded && isGrounded)
         {
             nextFireTime = Time.time + fireRate;
@@ -139,6 +143,8 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isLocked) return;
+
         if (isLeader)
         {
             HandleMovement();
@@ -243,7 +249,7 @@ public class PlayerMovement : MonoBehaviour
         {
             positionHistory.Enqueue(targetToFollow.position);
             timeHistory.Enqueue(Time.time);
-            
+
             while (timeHistory.Count > 0 && timeHistory.Peek() < Time.time - followDelay)
             {
                 positionHistory.Dequeue();
