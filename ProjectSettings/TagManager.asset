@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Ground
   - Bullet
+  - Monster
+  - Gold
   layers:
   - Default
   - TransparentFX
@@ -16,8 +18,8 @@ TagManager:
   - Player
   - Bullet
   - Ground
-  - 
-  - 
+  - Monster
+  - Gold
   - 
   - 
   - 

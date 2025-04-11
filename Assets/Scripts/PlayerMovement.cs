@@ -3,24 +3,42 @@ using System.Collections.Generic;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Jump Settings")]
+    [Header("Movement Settings")]
     public bool isLeader = false;
+    public float moveSpeed = 5f;
+
+    [Header("Jump Settings")]
     public float ascentSpeed = 3f;
     public float descentSpeed = 5f;
     public float maxJumpHeight = 3f;
     public float gravityScale = 3f;
     public float hoverDuration = 0.5f;
+    public float jumpBufferTime = 0.2f;
+    
+    [Header("Shooting Settings")]
+    public GameObject bulletPrefab;
+    public float fireRate = 0.5f;
+    public Transform firePoint;
+    
+    [Header("Ground Check")]
+    public LayerMask groundLayer;
+    private List<Collider2D> groundContacts = new List<Collider2D>();
     
     [Header("Follow Settings")]
     public float followDelay = 0.2f;
+    public float followSmoothTime = 0.1f;
+    private Vector2 followVelocity;
     
-    private Rigidbody2D rb;
-    private bool isGrounded;
-    private bool isHoldingJump;
-    private bool reachedMaxHeight;
-    private bool isHovering;
-    private float startingY;
-    private float hoverTimer;
+    public Rigidbody2D rb;
+    public bool isGrounded;
+    public bool isHoldingJump;
+    public bool reachedMaxHeight;
+    public bool isHovering;
+    public bool mustReleaseSpace;
+    public float startingY;
+    public float hoverTimer;
+    private float nextFireTime;
+    private float jumpBufferTimer;
     
     public Transform targetToFollow;
     private Queue<Vector3> positionHistory;
@@ -40,6 +58,10 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        UpdateGroundStatus();
+        HandleShooting();
+        HandleJumpBuffer();
+        
         if (isLeader)
         {
             HandleLeaderInput();
@@ -52,11 +74,74 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void HandleJumpBuffer()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && !isGrounded)
+        {
+            jumpBufferTimer = jumpBufferTime;
+        }
+        else if (jumpBufferTimer > 0)
+        {
+            jumpBufferTimer -= Time.deltaTime;
+        }
+
+        if (isGrounded && jumpBufferTimer > 0 && !mustReleaseSpace)
+        {
+            StartAscent();
+            jumpBufferTimer = 0f;
+        }
+    }
+
+    void UpdateGroundStatus()
+    {
+        bool wasGrounded = isGrounded;
+        isGrounded = groundContacts.Count > 0;
+        
+        if (!wasGrounded && isGrounded)
+        {
+            nextFireTime = Time.time + fireRate;
+        }
+    }
+
+    void HandleShooting()
+    {
+        if (isGrounded && Time.time >= nextFireTime)
+        {
+            GameObject bullet = BulletPool.Instance.GetBullet();
+            if (bullet != null)
+            {
+                bullet.transform.position = firePoint.position;
+                bullet.transform.rotation = Quaternion.identity;
+                bullet.SetActive(true);
+                nextFireTime = Time.time + fireRate;
+            }
+        }
+    }
+
+    void HandleLeaderInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded && !mustReleaseSpace)
+        {
+            StartAscent();
+        }
+
+        if (isGrounded && Input.GetKey(KeyCode.Space))
+        {
+            mustReleaseSpace = true;
+        }
+
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            mustReleaseSpace = false;
+            StopAscent();
+        }
+    }
+
     void FixedUpdate()
     {
         if (isLeader)
         {
-            HandleVerticalMovement();
+            HandleMovement();
         }
         else if (targetToFollow != null)
         {
@@ -64,21 +149,11 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void HandleLeaderInput()
+    void HandleMovement()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            StartAscent();
-        }
+        float moveInput = Input.GetAxis("Horizontal");
+        rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
 
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            StopAscent();
-        }
-    }
-
-    void HandleVerticalMovement()
-    {
         if (isHoldingJump)
         {
             if (!reachedMaxHeight)
@@ -91,8 +166,35 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                rb.velocity = Vector2.zero; // Dừng lại khi đang hover
+                rb.velocity = new Vector2(rb.velocity.x, 0);
             }
+        }
+    }
+
+    public void StartAscent()
+    {
+        startingY = transform.position.y;
+        isHoldingJump = true;
+        reachedMaxHeight = false;
+        isHovering = false;
+        mustReleaseSpace = false;
+        rb.gravityScale = 0f;
+    }
+
+    public void StopAscent()
+    {
+        isHoldingJump = false;
+        isHovering = false;
+        rb.gravityScale = gravityScale;
+    }
+
+    void CheckMaxHeight()
+    {
+        if (isHoldingJump && transform.position.y >= startingY + maxJumpHeight && !reachedMaxHeight)
+        {
+            reachedMaxHeight = true;
+            isHovering = true;
+            hoverTimer = hoverDuration;
         }
     }
 
@@ -108,78 +210,71 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void StartAscent()
-    {
-        startingY = transform.position.y;
-        isHoldingJump = true;
-        reachedMaxHeight = false;
-        isHovering = false;
-        rb.gravityScale = 0f;
-    }
-
-    void StopAscent()
-    {
-        isHoldingJump = false;
-        isHovering = false;
-        rb.gravityScale = gravityScale;
-    }
-
-    void CheckMaxHeight()
-    {
-        if (isHoldingJump && transform.position.y >= startingY + maxJumpHeight && !reachedMaxHeight)
-        {
-            reachedMaxHeight = true;
-            isHovering = true;
-            hoverTimer = hoverDuration;
-        }
-        
-        if (isGrounded)
-        {
-            reachedMaxHeight = false;
-            isHovering = false;
-        }
-    }
-
-    // ... (Giữ nguyên các hàm Follow và Collision)
-    void UpdateFollowPosition()
-    {
-        positionHistory.Enqueue(targetToFollow.position);
-        timeHistory.Enqueue(Time.time);
-        
-        while (timeHistory.Count > 0 && timeHistory.Peek() < Time.time - followDelay)
-        {
-            positionHistory.Dequeue();
-            timeHistory.Dequeue();
-        }
-    }
-
-    void ApplyFollowPosition()
-    {
-        if (positionHistory.Count > 0)
-        {
-            Vector3 targetPosition = positionHistory.Peek();
-            transform.position = new Vector3(
-                transform.position.x,
-                targetPosition.y,
-                transform.position.z
-            );
-            isGrounded = targetToFollow.GetComponent<PlayerMovement>().isGrounded;
-        }
-    }
-
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground") && isLeader)
+        if (((1 << collision.gameObject.layer) & groundLayer) != 0)
         {
-            isGrounded = true;
+            if (!groundContacts.Contains(collision.collider))
+            {
+                groundContacts.Add(collision.collider);
+            }
         }
     }
 
     void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground") && isLeader)
+        if (((1 << collision.gameObject.layer) & groundLayer) != 0)
         {
-            isGrounded = false;
+            groundContacts.Remove(collision.collider);
         }
+    }
+
+    void OnDestroy()
+    {
+        if (isLeader && GameManager.Instance != null)
+        {
+            GameManager.Instance.RemovePlayer(gameObject);
+        }
+    }
+
+    void UpdateFollowPosition()
+    {
+        if (targetToFollow != null)
+        {
+            positionHistory.Enqueue(targetToFollow.position);
+            timeHistory.Enqueue(Time.time);
+            
+            while (timeHistory.Count > 0 && timeHistory.Peek() < Time.time - followDelay)
+            {
+                positionHistory.Dequeue();
+                timeHistory.Dequeue();
+            }
+        }
+    }
+
+    void ApplyFollowPosition()
+    {
+        if (positionHistory.Count > 0 && targetToFollow != null)
+        {
+            Vector3 targetPosition = positionHistory.Peek();
+            Vector3 newPosition = Vector2.SmoothDamp(
+                transform.position,
+                new Vector2(transform.position.x, targetPosition.y),
+                ref followVelocity,
+                followSmoothTime
+            );
+            transform.position = new Vector3(newPosition.x, newPosition.y, transform.position.z);
+        }
+    }
+
+    public void InheritJumpState(PlayerMovement previousLeader)
+    {
+        isHoldingJump = previousLeader.isHoldingJump;
+        reachedMaxHeight = previousLeader.reachedMaxHeight;
+        isHovering = previousLeader.isHovering;
+        mustReleaseSpace = previousLeader.mustReleaseSpace;
+        startingY = previousLeader.startingY;
+        hoverTimer = previousLeader.hoverTimer;
+        rb.gravityScale = previousLeader.rb.gravityScale;
     }
 }

@@ -143,3 +143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b64f748c28c94c343b3d0c2af31a3bb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 8131424982465019141, guid: c3d524503efb81a4f84224349b37617e, type: 3}
+  cloneCooldown: 2
+  cloneKey: 99

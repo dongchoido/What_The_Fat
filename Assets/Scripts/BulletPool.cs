@@ -1,17 +1,17 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class BulletPool : MonoBehaviour
 {
-    public static BulletPool instance;
+    public static BulletPool Instance;
     public GameObject bulletPrefab;
-    public int poolSize = 500; // Số viên đạn tối đa trong pool
-
-    private Queue<GameObject> bulletQueue = new Queue<GameObject>();
+    public int poolSize = 20;
+    
+    private Queue<GameObject> _bulletPool = new Queue<GameObject>();
 
     void Awake()
     {
-        instance = this;
+        Instance = this;
         InitializePool();
     }
 
@@ -21,29 +21,32 @@ public class BulletPool : MonoBehaviour
         {
             GameObject bullet = Instantiate(bulletPrefab);
             bullet.SetActive(false);
-            bulletQueue.Enqueue(bullet);
+            _bulletPool.Enqueue(bullet);
         }
     }
 
     public GameObject GetBullet()
+{
+    GameObject bullet;
+
+    if (_bulletPool.Count > 0)
     {
-        if (bulletQueue.Count > 0)
-        {
-            GameObject bullet = bulletQueue.Dequeue();
-            bullet.SetActive(true);
-            return bullet;
-        }
-        else
-        {
-            // Nếu hết viên đạn trong pool, tạo mới (có thể hạn chế nếu cần)
-            GameObject bullet = Instantiate(bulletPrefab);
-            return bullet;
-        }   
+        bullet = _bulletPool.Dequeue();
     }
+    else
+    {
+        bullet = Instantiate(bulletPrefab);
+    }
+
+    bullet.SetActive(true); // <- Đầu tiên: bật đạn lên
+    bullet.GetComponent<Bullet>().ResetBullet(); // <- Sau đó: reset mọi thứ
+
+    return bullet;
+}
 
     public void ReturnBullet(GameObject bullet)
     {
         bullet.SetActive(false);
-        bulletQueue.Enqueue(bullet);
+        _bulletPool.Enqueue(bullet);
     }
 }

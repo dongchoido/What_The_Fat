@@ -147,7 +147,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -172,6 +172,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isLeader: 0
-  lowJumpForce: 5
-  highJumpForce: 8
-  highJumpChargeTime: 0.5
+  moveSpeed: 5
+  ascentSpeed: 3
+  descentSpeed: 5
+  maxJumpHeight: 3
+  gravityScale: 3
+  hoverDuration: 0.5
+  jumpBufferTime: 0.2
+  bulletPrefab: {fileID: 1030297820136329147, guid: 99edc8c5ec26c9940acf50972b4072af, type: 3}
+  fireRate: 0.5
+  firePoint: {fileID: 5766444795725476180}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  followDelay: 0.2
+  followSmoothTime: 0.1
+  rb: {fileID: 0}
+  isGrounded: 0
+  isHoldingJump: 0
+  reachedMaxHeight: 0
+  isHovering: 0
+  mustReleaseSpace: 0
+  startingY: 0
+  hoverTimer: 0
+  targetToFollow: {fileID: 0}

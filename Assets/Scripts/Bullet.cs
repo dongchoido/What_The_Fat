@@ -1,46 +1,71 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class Bullet : MonoBehaviour
 {
-    public float speed = 10f;  // Tốc độ bay của đạn
-    public int damage = 10;    // Sát thương
-    public float lifeTime = 10f; // Thời gian tồn tại tối đa
-
-    private Rigidbody2D rb;
+    [Header("Bullet Settings")]
+    public float speed = 10f;
+    public float lifetime = 2f;
+    public int damage = 1;
+    
+    private Rigidbody2D _rb;
+    private float _spawnTime;
+    private bool _isActive;
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody2D>(); // Lấy Rigidbody2D ngay khi khởi tạo
+        _rb = GetComponent<Rigidbody2D>();
     }
 
     void OnEnable()
     {
-        rb.velocity = Vector2.right * speed; // Đặt vận tốc ngay khi bật đạn lên
-        CancelInvoke("DestroyBullet");
-        Invoke("DestroyBullet", lifeTime);   // Tự hủy sau thời gian nhất định
+        ResetBullet(); // Gọi reset khi đạn được kích hoạt
     }
 
-    // private void OnTriggerEnter2D(Collider2D collision)
-    // {
-    //     if (collision.CompareTag("Monster"))
-    //     {
-    //         BossHealth bossHealth = collision.GetComponent<BossHealth>();
-    //         if (bossHealth != null)
-    //         {
-    //             bossHealth.TakeDamage(damage);
-    //         }
-
-    //         DestroyBullet();
-    //     }
-    // }
-
-    void DestroyBullet()
+    // Hàm reset quan trọng cho Object Pool
+    public void ResetBullet()
     {
-        gameObject.SetActive(false); // Dùng Object Pooling thay vì Destroy()
+        _spawnTime = Time.time;
+        _isActive = true;
+        _rb.velocity = transform.right * speed;
     }
 
-    private void OnBecameInvisible()
+    void Update()
     {
-        DestroyBullet(); // Hủy đạn nếu ra khỏi màn hình để tối ưu hiệu suất
+        if (_isActive && Time.time - _spawnTime >= lifetime)
+        {
+            Deactivate();
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!_isActive) return;
+
+        // // Bỏ qua va chạm với Player và đạn khác
+         if (other.CompareTag("Player") || other.CompareTag("Bullet")) return;
+        
+        if (other.CompareTag("Monster"))
+        {
+            other.GetComponent<MonsterHealth>()?.TakeDamage(damage);
+        }
+        Deactivate();
+    }
+
+    void Deactivate()
+    {
+        if (!_isActive) return;
+        
+        _isActive = false;
+        _rb.velocity = Vector2.zero;
+        
+        if (BulletPool.Instance != null)
+        {
+            BulletPool.Instance.ReturnBullet(this.gameObject);
+        }
+        else
+        {
+            gameObject.SetActive(false);
+        }
     }
 }
