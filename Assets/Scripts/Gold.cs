@@ -8,7 +8,6 @@ public class Gold : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("GOld");
             GameManager.Instance.AddGold(goldValue); // Cộng vàng vào GameManager
             Destroy(gameObject); // Xoá đối tượng vàng
         }

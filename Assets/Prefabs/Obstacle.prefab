@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6024873337896750639}
   - component: {fileID: 3386213281921647346}
-  - component: {fileID: 5530240473618488423}
   - component: {fileID: 6331476177230005714}
+  - component: {fileID: 5530240473618488423}
   m_Layer: 12
   m_Name: Obstacle
   m_TagString: Obstacle
@@ -86,19 +86,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &5530240473618488423
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 554923502016029760}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec3a0b8bace2d704097d261e59dd97a9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  destroyDelay: 0.1
 --- !u!61 &6331476177230005714
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -144,3 +131,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &5530240473618488423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 554923502016029760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec3a0b8bace2d704097d261e59dd97a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 0}
+  sprite: {fileID: 0}
+  boxCollider: {fileID: 6331476177230005714}
+  isExplosive: 1

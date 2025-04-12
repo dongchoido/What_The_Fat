@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6851735434018114960
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5667951277721641376}
+  m_Layer: 6
+  m_Name: GroundCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5667951277721641376
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6851735434018114960}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.63, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5766444795725476180}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8131424982465019141
 GameObject:
   m_ObjectHideFlags: 0
@@ -32,7 +63,8 @@ Transform:
   m_LocalPosition: {x: -10, y: 2, z: 0}
   m_LocalScale: {x: 1, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 5667951277721641376}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6237140203568951929
@@ -147,7 +179,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 3
+  m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -172,30 +204,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isLeader: 0
+  targetToFollow: {fileID: 0}
+  followDelay: 0.2
   moveSpeed: 5
-  ascentSpeed: 3
-  descentSpeed: 5
+  ascentSpeed: 5
+  descentSpeed: -10
   maxJumpHeight: 3
   gravityScale: 3
   hoverDuration: 0.5
-  jumpBufferTime: 0.2
-  bulletPrefab: {fileID: 1030297820136329147, guid: 99edc8c5ec26c9940acf50972b4072af, type: 3}
-  fireRate: 0.5
-  firePoint: {fileID: 5766444795725476180}
+  groundCheck: {fileID: 5667951277721641376}
+  rayDistance: 0.2
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  followDelay: 0.2
-  followSmoothTime: 0.1
-  rb: {fileID: 0}
-  isGrounded: 0
-  isHoldingJump: 0
-  reachedMaxHeight: 0
-  isHovering: 0
-  mustReleaseSpace: 0
-  startingY: 0
-  hoverTimer: 0
-  targetToFollow: {fileID: 0}

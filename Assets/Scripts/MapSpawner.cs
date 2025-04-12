@@ -3,10 +3,11 @@ using UnityEngine;
 public class MapSpawner : MonoBehaviour
 {
     public GameObject[] groundPrefabs;
-    public float spawnThreshold = 100f;      // Spawn khi đoạn trước đã cách xa vị trí spawn 100 đơn vị
+    public float spawnThreshold = 117f;      // Spawn khi đoạn trước đã cách xa vị trí spawn 100 đơn vị
 
     private GameObject lastSpawnedGround;    // Ground vừa spawn trước đó
 
+    public float distance;
     void Start()
     {
         SpawnGround();  // Spawn đoạn đầu tiên
@@ -16,7 +17,7 @@ public class MapSpawner : MonoBehaviour
     {
         if (lastSpawnedGround == null) return;
 
-        float distance = transform.position.x - lastSpawnedGround.transform.position.x;
+         distance = transform.position.x - lastSpawnedGround.transform.position.x;
 
         if (distance >= spawnThreshold)
         {
@@ -34,5 +35,7 @@ public class MapSpawner : MonoBehaviour
 
         // Lưu lại ground cuối cùng đã spawn
         lastSpawnedGround = newGround;
+
+        spawnThreshold = 117+ (GameManager.Instance.scrollSpeed)/2;
     }
 }

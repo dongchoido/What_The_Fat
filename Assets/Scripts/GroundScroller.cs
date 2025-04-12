@@ -3,7 +3,10 @@ using UnityEngine;
 public class GroundScroller : MonoBehaviour
 {
     public float scrollSpeed = 2f;   // Tốc độ di chuyển mặt đất
-
+    void Start()
+    {
+        scrollSpeed = GameManager.Instance.scrollSpeed;
+    }
     void Update()
     {
         // Di chuyển từ phải sang trái
