@@ -1,199 +1,173 @@
 using UnityEngine;
 using System.Linq;
-using System.Collections;
-using UnityEngine.UI;
 using TMPro;
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public GameObject[] players;
     public string playerTag = "Player";
-    
-    [Header("Position Settings")]
-    public float leaderX = -2f;
-    public float spacing = 1.5f;
-    public float minLastPlayerX = -7.5f;
-    public float repositionSpeed = 5f;
-    
-    [Header("New Player Settings")]
-    public float newPlayerSpawnOffset = 3f;
-    public float newPlayerMoveSpeed = 3f;
 
-    [Header("Gold Settings")]
+    [Header("References")]
+    public GameObject playerPrefab;
+
+    [Header("UI")]
     public int currentGold = 0;
     public TextMeshProUGUI goldText;
 
-    private bool isRepositioning = false;
-    private Vector3[] targetPositions;
-    private GameObject newPlayerBeingAdded;
+    [Header("Jump Settings")]
+    public float jumpDelayPerPlayer = 0.1f;
 
+    [Header("Line Settings")]
+    public float leaderX = -2f;
+    public float minX = -7.5f;
+    public float defaultSpacing = 1.5f;
+    public float spacing = 1.5f;
+
+    [Header("Ground")]
+    public float scrollSpeed = 4f;
 
     void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
-    void Start() 
+    void Start()
     {
         RefreshPlayers();
-        UpdateGoldUI(); 
+        UpdateGoldUI();
     }
 
     void Update()
     {
-        if (isRepositioning)
+        if (players == null || players.Length == 0) return;
+
+        PlayerMovement leader = players[0].GetComponent<PlayerMovement>();
+        if (leader == null) return;
+
+        if (Input.GetKeyDown(KeyCode.Space) && leader.IsGrounded())
         {
-            SmoothReposition();
+            leader.StartJump();
+            BroadcastJump(leader);
         }
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            leader.StopJump();
+            BroadcastFall(leader);
+        }
+        caculateJumpDelay();
     }
 
-    public void RemovePlayer(GameObject playerToRemove)
+    void FixedUpdate()
     {
-        PlayerMovement removedPlayer = playerToRemove.GetComponent<PlayerMovement>();
-        bool wasLeader = removedPlayer.isLeader;
-
-        players = players.Where(p => p != playerToRemove).ToArray();
-
-        if (!wasLeader)
-        {
-            foreach (var player in players)
-            {
-                PlayerMovement pm = player.GetComponent<PlayerMovement>();
-                if (pm.targetToFollow == playerToRemove.transform)
-                {
-                    int index = System.Array.IndexOf(players, playerToRemove);
-                    if (index > 0) pm.targetToFollow = players[index-1].transform;
-                }
-            }
-        }
-
-        if (wasLeader && players.Length > 0)
-        {
-            var newLeader = players[0].GetComponent<PlayerMovement>();
-            newLeader.isLeader = true;
-            newLeader.targetToFollow = null;
-            newLeader.InheritJumpState(removedPlayer);
-        }
-
-        SetupPlayerRoles();
-        CalculateTargetPositions();
-        isRepositioning = true;
-    }
-
-    public void AddNewPlayer(GameObject newPlayer)
-    {
-        if (players.Length == 0)
-        {
-            newPlayer.GetComponent<PlayerMovement>().isLeader = true;
-            players = new GameObject[] { newPlayer };
-            return;
-        }
-
-        GameObject lastPlayer = players[players.Length - 1];
-        Vector3 spawnPos = lastPlayer.transform.position - new Vector3(newPlayerSpawnOffset, 0, 0);
-        
-        newPlayer.transform.position = spawnPos;
-        players = players.Concat(new GameObject[] { newPlayer }).ToArray();
-        
-        newPlayerBeingAdded = newPlayer;
-        SetupPlayerRoles();
-        CalculateTargetPositions();
-        isRepositioning = true;
-    }
-
-    void SmoothReposition()
-    {
-        bool allInPosition = true;
-
-        for (int i = 0; i < players.Length; i++)
-        {
-            if (players[i] == newPlayerBeingAdded)
-            {
-                // Di chuyển nhân vật mới với tốc độ chậm hơn
-                players[i].transform.position = Vector3.MoveTowards(
-                    players[i].transform.position,
-                    targetPositions[i],
-                    newPlayerMoveSpeed * Time.deltaTime
-                );
-            }
-            else
-            {
-                players[i].transform.position = Vector3.MoveTowards(
-                    players[i].transform.position,
-                    targetPositions[i],
-                    repositionSpeed * Time.deltaTime
-                );
-            }
-
-            if (Vector3.Distance(players[i].transform.position, targetPositions[i]) > 0.01f)
-            {
-                allInPosition = false;
-            }
-        }
-
-        if (allInPosition)
-        {
-            isRepositioning = false;
-            newPlayerBeingAdded = null;
-        }
-    }
-
-    void CalculateTargetPositions()
-    {
-        targetPositions = new Vector3[players.Length];
-        float totalSpace = (players.Length - 1) * spacing;
-        float adjustedLeaderX = Mathf.Max(leaderX, minLastPlayerX + totalSpace);
-
-        for (int i = 0; i < players.Length; i++)
-        {
-            targetPositions[i] = new Vector3(
-                adjustedLeaderX - (i * spacing),
-                players[i].transform.position.y,
-                players[i].transform.position.z
-            );
-        }
+         RepositionPlayers();
     }
 
     public void RefreshPlayers()
     {
         players = GameObject.FindGameObjectsWithTag(playerTag)
-                   .OrderByDescending(p => p.transform.position.x).ToArray();
-        SetupPlayerRoles();
-        CalculateTargetPositions();
-        isRepositioning = true;
+            .OrderByDescending(p => p.transform.position.x)
+            .ToArray();
+        SetupRoles();
     }
 
-    void SetupPlayerRoles()
+    void SetupRoles()
     {
-        if (players.Length == 0) return;
-        
-        players[0].GetComponent<PlayerMovement>().isLeader = true;
+        for (int i = 0; i < players.Length; i++)
+        {
+            var pm = players[i].GetComponent<PlayerMovement>();
+            pm.isLeader = (i == 0);
+            pm.targetToFollow = (i > 0) ? players[i - 1].transform : null;
+        }
+    }
 
+    public void BroadcastJump(PlayerMovement leader)
+    {
         for (int i = 1; i < players.Length; i++)
         {
-            PlayerMovement pm = players[i].GetComponent<PlayerMovement>();
-            pm.isLeader = false;
-            pm.targetToFollow = players[i - 1].transform;
+            var pm = players[i].GetComponent<PlayerMovement>();
+            pm.followDelay = i * jumpDelayPerPlayer;
+            pm.TriggerJumpFromLeader(leader);
+        }
+    }
+
+    public void BroadcastFall(PlayerMovement leader)
+    {
+        for (int i = 1; i < players.Length; i++)
+        {
+            var pm = players[i].GetComponent<PlayerMovement>();
+            pm.followDelay = i * jumpDelayPerPlayer;
+            pm.TriggerFallFromLeader(leader);
         }
     }
 
     public void AddGold(int amount)
-{
-    currentGold += amount;
-    UpdateGoldUI();
-}
+    {
+        currentGold += amount;
+        UpdateGoldUI();
+    }
 
     void UpdateGoldUI()
+    {
+        if (goldText != null)
+            goldText.text = "Gold: " + currentGold;
+    }
+
+    public void AddNewPlayer()
+    {
+         spacing = defaultSpacing;
+        if (players.Length > 1)
+        {
+            float totalDistance = leaderX - minX;
+            spacing = Mathf.Min(defaultSpacing, totalDistance / (players.Length));
+        }
+
+        Vector3 spawnPos = players.Length > 0
+            ? players[players.Length - 1].transform.position + new Vector3(-spacing, 5, 0)
+            : new Vector3(leaderX, 0, 0);
+
+        GameObject newPlayer = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
+        newPlayer.tag = playerTag;
+
+        RefreshPlayers();
+    }
+
+    public void RemovePlayer(GameObject player)
 {
-    if (goldText != null)
-        goldText.text = "Gold: " + currentGold;
+    // Xóa khỏi mảng players
+    players = players.Where(p => p != player).ToArray();
+
+    // Nếu còn player khác → cập nhật leader
+    if (players.Length > 0)
+    {
+        SetupRoles(); // Gán lại leader + targetToFollow
+    }
+
+    Destroy(player);
 }
+
+    void RepositionPlayers()
+    {
+        if (players.Length == 0) return;
+
+        float spacing = defaultSpacing;
+        float totalDistance = leaderX - minX;
+        if (players.Length > 1)
+            spacing = Mathf.Min(defaultSpacing, totalDistance / (players.Length - 1));
+
+        for (int i = 0; i < players.Length; i++)
+        {
+            float xPos = Mathf.Max(minX, leaderX - i * spacing);
+            Vector3 current = players[i].transform.position;
+            Vector3 target = new Vector3(xPos, current.y, current.z);
+
+            players[i].transform.position = Vector3.Lerp(current, target, Time.deltaTime * 5f);
+        }
+    }
+
+    private void caculateJumpDelay()
+    {
+        jumpDelayPerPlayer = spacing/scrollSpeed - 0.01f;
+    }
 }

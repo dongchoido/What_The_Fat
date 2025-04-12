@@ -8,6 +8,8 @@ TagManager:
   - Bullet
   - Monster
   - Gold
+  - Buff
+  - Obstacle
   layers:
   - Default
   - TransparentFX
@@ -20,8 +22,8 @@ TagManager:
   - Ground
   - Monster
   - Gold
-  - 
-  - 
+  - Buff
+  - Obstacle
   - 
   - 
   - 
