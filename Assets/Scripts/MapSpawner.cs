@@ -36,6 +36,6 @@ public class MapSpawner : MonoBehaviour
         // Lưu lại ground cuối cùng đã spawn
         lastSpawnedGround = newGround;
 
-        spawnThreshold = 117+ (GameManager.Instance.scrollSpeed)/2;
+        spawnThreshold = 117+ (GameManager.Instance.scrollSpeed);
     }
 }
