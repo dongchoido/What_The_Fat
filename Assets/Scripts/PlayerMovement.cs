@@ -1,6 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -18,12 +17,15 @@ public class PlayerMovement : MonoBehaviour
     public float maxJumpHeight = 3f;
     public float gravityScale = 3f;
     public float hoverDuration = 0.5f;
+   
 
     [Header("Ground Check")]
     public Transform groundCheck;
     public float rayDistance = 0.2f;
     public LayerMask groundLayer;
-    private bool isGrounded;
+    public bool isGrounded;
+
+    public bool isTouchingMonster;
 
     private Rigidbody2D rb;
 
@@ -42,13 +44,20 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (!isHoldingJump)
+        if (!isHoldingJump) 
         {
             CheckGroundRay();
         }
         HandleJumpState();
     }
-
+void OnDrawGizmos()
+{
+    if (groundCheck != null)
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(groundCheck.position, 0.2f);
+    }
+}
     void FixedUpdate()
     {
         rb.velocity = new Vector2(0f, rb.velocity.y); 
@@ -56,9 +65,8 @@ public class PlayerMovement : MonoBehaviour
 
     void CheckGroundRay()
     {
-        RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, rayDistance, groundLayer);
-        isGrounded = (hit.collider != null);
-        Debug.DrawRay(groundCheck.position, Vector2.down * rayDistance, Color.red); 
+        //isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+        
         if (isGrounded && !isHoldingJump)
         {
             reachedMaxHeight = false;
@@ -110,6 +118,7 @@ public class PlayerMovement : MonoBehaviour
         isHovering = false;
         rb.gravityScale = 0f;
         isGrounded = false;
+
     }
 
     public void StopJump()
@@ -160,11 +169,35 @@ public class PlayerMovement : MonoBehaviour
     {
         GameObject prePlayer = null;
         if(GameManager.Instance.players.Length > 1)
-            { prePlayer = GameManager.Instance.players[GameManager.Instance.players.Length -1 ];}
-       if(prePlayer != null) 
-       {PlayerMovement comp = prePlayer.GetComponent<PlayerMovement>();
-        if(!comp.IsGrounded())
-            StartJump();}
+            { prePlayer = GameManager.Instance.players[GameManager.Instance.players.Length -2 ];
+                PlayerMovement comp = prePlayer.GetComponent<PlayerMovement>();
+        if(comp.IsGrounded())
+            {
+                followDelay = GameManager.Instance.delay;
+                TriggerJumpFromLeader(GameManager.Instance.players[0].GetComponent<PlayerMovement>());
+            }
+            
+       }
     }
 
+    public void goToPosition(Vector3 x,Vector3 y)
+    {
+        if(!isTouchingMonster)
+            transform.position = Vector3.Lerp(x,y,Time.deltaTime * 5f);
+    }
+
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        if(other.collider.CompareTag("Monster"))
+            isTouchingMonster = true;
+        if(other.collider.CompareTag("Ground"))
+                isGrounded=true;
+    }
+    void OnCollisionExit2D(Collision2D other)
+    {
+        if(other.collider.CompareTag("Monster"))
+            isTouchingMonster = false;
+        if(other.collider.CompareTag("Ground"))
+            isGrounded=false;
+    }
 }

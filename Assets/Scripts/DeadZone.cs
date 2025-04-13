@@ -17,7 +17,7 @@ public class DeadZone : MonoBehaviour
             {
             //Debug.Log("Rơi xuống vực");
  
-            BoxCollider2D bc = collision.GetComponent<BoxCollider2D>();
+            CapsuleCollider2D bc = collision.GetComponent<CapsuleCollider2D>();
             bc.isTrigger = true;
             if (player == null) return;
             GameManager.Instance.RemovePlayer(player.gameObject);

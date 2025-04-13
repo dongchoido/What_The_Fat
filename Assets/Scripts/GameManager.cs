@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Linq;
 using TMPro;
+using System.Linq.Expressions;
+using UnityEngine.SocialPlatforms;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -14,9 +17,11 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     public int currentGold = 0;
     public TextMeshProUGUI goldText;
+    public TextMeshProUGUI catText;
 
     [Header("Jump Settings")]
     public float jumpDelayPerPlayer = 0.1f;
+    public float delay;
 
     [Header("Line Settings")]
     public float leaderX = -2f;
@@ -26,6 +31,14 @@ public class GameManager : MonoBehaviour
 
     [Header("Ground")]
     public float scrollSpeed = 4f;
+
+    [Header("Magnet Settings")]
+    public bool isMagnetActive = false;
+    public float magnetTimer = 15f;
+    public Transform leaderTarget;
+    public float magnetRangeX = 7.5f;
+    public GameObject[] coins;
+    private bool resetedCoins = false;
 
     void Awake()
     {
@@ -37,6 +50,8 @@ public class GameManager : MonoBehaviour
     {
         RefreshPlayers();
         UpdateGoldUI();
+        UpdateCatUI();
+        UpdateCoinList();
     }
 
     void Update()
@@ -62,6 +77,7 @@ public class GameManager : MonoBehaviour
     void FixedUpdate()
     {
          RepositionPlayers();
+         HandleMagnet();
     }
 
     public void RefreshPlayers()
@@ -84,12 +100,14 @@ public class GameManager : MonoBehaviour
 
     public void BroadcastJump(PlayerMovement leader)
     {
-        for (int i = 1; i < players.Length; i++)
+        int i;
+        for (i = 1; i < players.Length; i++)
         {
             var pm = players[i].GetComponent<PlayerMovement>();
             pm.followDelay = i * jumpDelayPerPlayer;
             pm.TriggerJumpFromLeader(leader);
         }
+        delay = jumpDelayPerPlayer + 0.02f;
     }
 
     public void BroadcastFall(PlayerMovement leader)
@@ -114,6 +132,12 @@ public class GameManager : MonoBehaviour
             goldText.text = "Gold: " + currentGold;
     }
 
+    void UpdateCatUI()
+    {
+        if(catText!=null)
+            catText.text = "X" + players.Length;
+    }
+
     public void AddNewPlayer()
     {
          spacing = defaultSpacing;
@@ -124,27 +148,31 @@ public class GameManager : MonoBehaviour
         }
 
         Vector3 spawnPos = players.Length > 0
-            ? players[players.Length - 1].transform.position + new Vector3(-spacing, 5, 0)
+            ? players[players.Length - 1].transform.position + new Vector3(-spacing, 0, 0)
             : new Vector3(leaderX, 0, 0);
 
         GameObject newPlayer = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
         newPlayer.tag = playerTag;
-
         RefreshPlayers();
+        UpdateCatUI();
     }
 
     public void RemovePlayer(GameObject player)
 {
     // Xóa khỏi mảng players
     players = players.Where(p => p != player).ToArray();
-
     // Nếu còn player khác → cập nhật leader
     if (players.Length > 0)
     {
         SetupRoles(); // Gán lại leader + targetToFollow
     }
-
+    else if (players.Length == 0)
+    {
+        Debug.Log("Game Over");
+        Time.timeScale = 0;
+    }
     Destroy(player);
+    UpdateCatUI();
 }
 
     void RepositionPlayers()
@@ -161,8 +189,8 @@ public class GameManager : MonoBehaviour
             float xPos = Mathf.Max(minX, leaderX - i * spacing);
             Vector3 current = players[i].transform.position;
             Vector3 target = new Vector3(xPos, current.y, current.z);
-
-            players[i].transform.position = Vector3.Lerp(current, target, Time.deltaTime * 5f);
+            PlayerMovement comp = players[i].GetComponent<PlayerMovement>();
+            comp.goToPosition(current,target);
         }
     }
 
@@ -170,4 +198,59 @@ public class GameManager : MonoBehaviour
     {
         jumpDelayPerPlayer = spacing/scrollSpeed - 0.01f;
     }
+
+    public void UpdateCoinList()
+{
+    coins = GameObject.FindGameObjectsWithTag("Gold")
+             .OrderBy(c => c.transform.position.x)
+             .ToArray();
+}
+
+    private void HandleMagnet()
+    {
+        if(!isMagnetActive) return;
+        magnetTimer-=Time.deltaTime;
+        if(!resetedCoins)
+        {
+            UpdateCoinList();
+            resetedCoins = true;
+            magnetTimer=15f;
+        }
+        if(magnetTimer>0)
+        {
+            AttractCoins();
+        }
+        else
+            {isMagnetActive = false;
+            coins = new GameObject[0];
+            resetedCoins = false;
+            magnetTimer=15f;}
+    }
+
+    private void AttractCoins()
+{
+    if (players.Length == 0) return;
+
+    Transform leader = players[0].transform;
+
+    foreach (GameObject coin in coins)
+    {
+        if (coin == null) continue;
+
+        float coinX = coin.transform.position.x;
+        if (coinX < magnetRangeX && coinX > -2f)
+        {
+            float speed = 20f * Time.deltaTime;
+            coin.transform.position = Vector2.MoveTowards(coin.transform.position, leader.position, speed);
+        }
+    }
+}
+
+    public void setMagnetTimer()
+    {
+        isMagnetActive = true;
+        magnetTimer = 15f;
+        
+    }
+
 }
