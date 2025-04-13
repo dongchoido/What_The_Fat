@@ -29,6 +29,7 @@ public class PlayerShooting : MonoBehaviour
             obj.transform.position = spawnPoint ? spawnPoint.position : transform.position;
             obj.transform.rotation = Quaternion.identity;
             obj.SetActive(true);
+            SoundManager.Instance.PlayShootSound();
         }
     }
 }

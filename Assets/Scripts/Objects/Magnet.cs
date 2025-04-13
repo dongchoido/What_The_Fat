@@ -10,7 +10,8 @@ public class Magnet : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             GameManager.Instance.setMagnetTimer();
+            Destroy(gameObject);
         }
-        Destroy(gameObject);
+
     }
 }

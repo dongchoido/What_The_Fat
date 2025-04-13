@@ -13,6 +13,7 @@ public class Gold : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             GameManager.Instance.AddGold(goldValue); // Cộng vàng vào GameManager
+            SoundManager.Instance.PlayCoinSound();
             Destroy(gameObject); // Xoá đối tượng vàng
         }
     }

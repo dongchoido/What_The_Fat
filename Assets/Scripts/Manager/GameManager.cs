@@ -153,6 +153,7 @@ public class GameManager : MonoBehaviour
 
         GameObject newPlayer = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
         newPlayer.tag = playerTag;
+        SoundManager.Instance.PlaySpawnSound();
         RefreshPlayers();
         UpdateCatUI();
     }
@@ -209,7 +210,7 @@ public class GameManager : MonoBehaviour
     private void HandleMagnet()
     {
         if(!isMagnetActive) return;
-        magnetTimer-=Time.deltaTime;
+ 
         if(!resetedCoins)
         {
             UpdateCoinList();
@@ -219,6 +220,7 @@ public class GameManager : MonoBehaviour
         if(magnetTimer>0)
         {
             AttractCoins();
+            magnetTimer-=Time.deltaTime;
         }
         else
             {isMagnetActive = false;
@@ -249,8 +251,7 @@ public class GameManager : MonoBehaviour
     public void setMagnetTimer()
     {
         isMagnetActive = true;
-        magnetTimer = 15f;
-        
+        magnetTimer = 15f;       
     }
 
 }

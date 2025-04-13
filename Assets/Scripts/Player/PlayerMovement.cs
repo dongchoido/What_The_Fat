@@ -118,7 +118,7 @@ void OnDrawGizmos()
         isHovering = false;
         rb.gravityScale = 0f;
         isGrounded = false;
-
+        SoundManager.Instance.PlayJumpSound();
     }
 
     public void StopJump()
