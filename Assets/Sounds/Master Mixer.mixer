@@ -1,5 +1,27 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!244 &-6898741387887276934
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: b3b9a9edaaf83254ca31eebbaf390d5e
+  m_EffectName: Compressor
+  m_MixLevel: f88ced934318c0d4899b185f2932b79e
+  m_Parameters:
+  - m_ParameterName: Threshold
+    m_GUID: 31aeeb7cb7ecba34e8314c5a78391488
+  - m_ParameterName: Attack
+    m_GUID: e2f461077177bfd4a9ff70ee787ea85d
+  - m_ParameterName: Release
+    m_GUID: 01ab55641a23c8246a4af950f24cab67
+  - m_ParameterName: Make up gain
+    m_GUID: 8a6576e76f1f3f64bbacef250ba90b8c
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
 --- !u!244 &-2618860154970673663
 AudioMixerEffectController:
   m_ObjectHideFlags: 3
@@ -103,7 +125,11 @@ AudioMixerSnapshotController:
   m_Name: Snapshot
   m_AudioMixer: {fileID: 24100000}
   m_SnapshotID: 15e5605d3a7780d40ac8b7ad97a1d2b0
-  m_FloatValues: {}
+  m_FloatValues:
+    01ab55641a23c8246a4af950f24cab67: 100
+    ddc1669563ed54447bb1e412e46d163b: 4000
+    e2f461077177bfd4a9ff70ee787ea85d: 10
+    31aeeb7cb7ecba34e8314c5a78391488: -15
   m_TransitionOverrides: {}
 --- !u!244 &4350389060978989397
 AudioMixerEffectController:
@@ -116,6 +142,22 @@ AudioMixerEffectController:
   m_EffectName: Attenuation
   m_MixLevel: 97e6507386659a8478d8688fb2c407a1
   m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &5160312807649986271
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 2ca8a49bacbeaf24891b610558eec054
+  m_EffectName: Lowpass Simple
+  m_MixLevel: 65decc0c74500e346b123dbe75c9abeb
+  m_Parameters:
+  - m_ParameterName: Cutoff freq
+    m_GUID: ddc1669563ed54447bb1e412e46d163b
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
   m_Bypass: 0
@@ -153,6 +195,8 @@ AudioMixerGroupController:
   m_Send: 00000000000000000000000000000000
   m_Effects:
   - {fileID: 9156785340162517763}
+  - {fileID: -6898741387887276934}
+  - {fileID: 5160312807649986271}
   m_UserColorIndex: 0
   m_Mute: 0
   m_Solo: 0
