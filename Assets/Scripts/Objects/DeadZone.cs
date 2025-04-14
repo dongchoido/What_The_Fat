@@ -13,7 +13,7 @@ public class DeadZone : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             PlayerMovement player = collision.GetComponent<PlayerMovement>();
-            if(!player.IsGrounded())
+            if(!player.IsGrounded() || player.isTouchingMonster)
             {
             //Debug.Log("Rơi xuống vực");
  

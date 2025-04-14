@@ -72,8 +72,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1617308929
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.90483123, g: 0, b: 0.9622642, a: 1}
@@ -143,7 +143,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b64f748c28c94c343b3d0c2af31a3bb1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 8131424982465019141, guid: c3d524503efb81a4f84224349b37617e, type: 3}
-  spawnOffsetX: -1.5
-  destroyAfterClone: 1
-  cloneEffect: {fileID: 0}
