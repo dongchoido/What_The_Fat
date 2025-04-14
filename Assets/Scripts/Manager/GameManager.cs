@@ -4,6 +4,7 @@ using TMPro;
 using System.Linq.Expressions;
 using UnityEngine.SocialPlatforms;
 using System;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,11 +14,13 @@ public class GameManager : MonoBehaviour
 
     [Header("References")]
     public GameObject playerPrefab;
+    public int catHistory;
 
     [Header("UI")]
     public int currentGold = 0;
     public TextMeshProUGUI goldText;
     public TextMeshProUGUI catText;
+    public TextMeshProUGUI catHistoryText;
 
     [Header("Jump Settings")]
     public float jumpDelayPerPlayer = 0.1f;
@@ -53,6 +56,8 @@ public class GameManager : MonoBehaviour
         UpdateGoldUI();
         UpdateCatUI();
         UpdateCoinList();
+        catHistory = players.Length;
+        UpdateCatHistory();
     }
 
     void Update()
@@ -157,6 +162,8 @@ public class GameManager : MonoBehaviour
         SoundManager.Instance.PlaySpawnSound();
         RefreshPlayers();
         UpdateCatUI();
+        catHistory++;
+        UpdateCatHistory();
     }
 
     public void RemovePlayer(GameObject player)
@@ -170,6 +177,8 @@ public class GameManager : MonoBehaviour
     }
     else if (players.Length == 0)
     {
+        HighScoreManager.Instance.AddPlayerCoin(currentGold);
+        HighScoreManager.Instance.TrySetNewHighScore(catHistory);
         Debug.Log("Game Over");
         Time.timeScale = 0;
     }
@@ -255,4 +264,8 @@ public class GameManager : MonoBehaviour
         magnetTimer = 15f;       
     }
 
+    void UpdateCatHistory()
+{
+    catHistoryText.text = "" + catHistory;
+}
 }
