@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     public float jumpDelayPerPlayer = 0.1f;
     public float delay;
 
+
     [Header("Line Settings")]
     public float leaderX = -2f;
     public float minX = -7.5f;
@@ -60,12 +61,12 @@ public class GameManager : MonoBehaviour
 
         PlayerMovement leader = players[0].GetComponent<PlayerMovement>();
         if (leader == null) return;
-
-        if (Input.GetKeyDown(KeyCode.Space) && leader.IsGrounded())
+       if (Input.GetKeyDown(KeyCode.Space) && leader.IsGrounded())
         {
             leader.StartJump();
             BroadcastJump(leader);
         }
+      
         if (Input.GetKeyUp(KeyCode.Space))
         {
             leader.StopJump();

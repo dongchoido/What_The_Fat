@@ -21,33 +21,41 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Ground Check")]
     public Transform groundCheck;
+    public Transform forwardCheck;
     public float rayDistance = 0.2f;
     public LayerMask groundLayer;
+    public LayerMask monsterLayer;
     public bool isGrounded;
-
     public bool isTouchingMonster;
 
     private Rigidbody2D rb;
 
-    private bool isHoldingJump = false;
+    public bool isHoldingJump = false;
     private bool reachedMaxHeight = false;
     private bool isHovering = false;
     private float startingY;
     private float hoverTimer = 0f;
+
+    [Header("Spawn effect")]
+    private SpriteRenderer spriteRenderer;
+    private float flashDuration = 0.5f;
+    private float flashInterval = 0.1f;
+    private float flashTimer = 0f;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = gravityScale;
         checkFollowJumping();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // Bắt đầu đổi màu mỗi 0.1s
+        InvokeRepeating(nameof(FlashColor), 0f, flashInterval);
     }
 
     void Update()
     {
-        if (!isHoldingJump) 
-        {
-            CheckGroundRay();
-        }
+        CheckGroundRay();
         HandleJumpState();
     }
 void OnDrawGizmos()
@@ -55,7 +63,12 @@ void OnDrawGizmos()
     if (groundCheck != null)
     {
         Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(groundCheck.position, 0.2f);
+        Gizmos.DrawWireSphere(groundCheck.position, rayDistance);
+    }
+    if (forwardCheck != null)
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(forwardCheck.position, rayDistance);
     }
 }
     void FixedUpdate()
@@ -65,8 +78,9 @@ void OnDrawGizmos()
 
     void CheckGroundRay()
     {
-        //isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
-        
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, rayDistance, groundLayer);
+        isTouchingMonster = Physics2D.OverlapCircle(forwardCheck.position, rayDistance, monsterLayer) ||
+                            Physics2D.OverlapCircle(forwardCheck.position, rayDistance, groundLayer);
         if (isGrounded && !isHoldingJump)
         {
             reachedMaxHeight = false;
@@ -186,18 +200,23 @@ void OnDrawGizmos()
             transform.position = Vector3.Lerp(x,y,Time.deltaTime * 5f);
     }
 
-    void OnCollisionEnter2D(Collision2D other)
+    void FlashColor()
     {
-        if(other.collider.CompareTag("Monster"))
-            isTouchingMonster = true;
-        if(other.collider.CompareTag("Ground"))
-                isGrounded=true;
+        // Tăng thời gian đã trôi qua
+        flashTimer += flashInterval;
+
+        // Tạo màu ngẫu nhiên bằng RGB
+        float r = Random.Range(0.5f, 1f);
+        float g = Random.Range(0.5f, 1f);
+        float b = Random.Range(0.5f, 1f);
+        spriteRenderer.color = new Color(r, g, b);
+
+        // Dừng sau 0.5s và đặt lại màu trắng
+        if (flashTimer >= flashDuration)
+        {
+            CancelInvoke(nameof(FlashColor));
+            spriteRenderer.color = Color.white;
+        }
     }
-    void OnCollisionExit2D(Collision2D other)
-    {
-        if(other.collider.CompareTag("Monster"))
-            isTouchingMonster = false;
-        if(other.collider.CompareTag("Ground"))
-            isGrounded=false;
-    }
+  
 }
