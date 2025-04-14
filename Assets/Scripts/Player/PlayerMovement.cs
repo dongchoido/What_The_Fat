@@ -46,7 +46,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = gravityScale;
-        checkFollowJumping();
+        //checkFollowJumping();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         // Bắt đầu đổi màu mỗi 0.1s
@@ -179,20 +179,20 @@ void OnDrawGizmos()
     public bool IsGrounded() => isGrounded;
     public bool IsHoldingJump() => isHoldingJump;
 
-    private void checkFollowJumping()
-    {
-        GameObject prePlayer = null;
-        if(GameManager.Instance.players.Length > 1)
-            { prePlayer = GameManager.Instance.players[GameManager.Instance.players.Length -2 ];
-                PlayerMovement comp = prePlayer.GetComponent<PlayerMovement>();
-        if(comp.IsGrounded())
-            {
-                followDelay = GameManager.Instance.delay;
-                TriggerJumpFromLeader(GameManager.Instance.players[0].GetComponent<PlayerMovement>());
-            }
+    // private void checkFollowJumping()
+    // {
+    //     GameObject prePlayer = null;
+    //     if(GameManager.Instance.players.Length > 1)
+    //         { prePlayer = GameManager.Instance.players[GameManager.Instance.players.Length -2 ];
+    //             PlayerMovement comp = prePlayer.GetComponent<PlayerMovement>();
+    //     if(comp.IsGrounded())
+    //         {
+    //             followDelay = GameManager.Instance.delay;
+    //             TriggerJumpFromLeader(GameManager.Instance.players[0].GetComponent<PlayerMovement>());
+    //         }
             
-       }
-    }
+    //    }
+    // }
 
     public void goToPosition(Vector3 x,Vector3 y)
     {

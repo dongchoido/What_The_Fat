@@ -23,7 +23,6 @@ public class Obstacle : MonoBehaviour
 
         if (collision.CompareTag("Player"))
         {
-            Debug.Log(" Bom chạm bất kỳ nhân vật nào -> nổ & xóa nhân vật");
 
             PlayerMovement player = collision.GetComponent<PlayerMovement>();
             if (player == null) return;

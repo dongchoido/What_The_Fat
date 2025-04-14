@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     [Header("References")]
     public GameObject playerPrefab;
     public int catHistory;
+    public GameOver gameOver;
 
     [Header("UI")]
     public int currentGold = 0;
@@ -180,6 +181,7 @@ public class GameManager : MonoBehaviour
         HighScoreManager.Instance.AddPlayerCoin(currentGold);
         HighScoreManager.Instance.TrySetNewHighScore(catHistory);
         Debug.Log("Game Over");
+        gameOver.gameOver();
         Time.timeScale = 0;
     }
     Destroy(player);

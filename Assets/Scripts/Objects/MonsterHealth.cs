@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MonsterHealth : MonoBehaviour
@@ -11,6 +12,10 @@ public class MonsterHealth : MonoBehaviour
     public Sprite normal;
     public Sprite weak;
     private SpriteRenderer sprite;
+
+    [Header("Reward")]
+    public GameObject rewards;
+    public GameObject currentParent;
     void Start()
     {
         currentHealth = maxHealth;
@@ -31,6 +36,7 @@ public class MonsterHealth : MonoBehaviour
     void Die()
     {
         // Xử lý khi quái vật chết
+        ShowReward();
         Destroy(gameObject);
     }
 
@@ -48,6 +54,17 @@ public class MonsterHealth : MonoBehaviour
         else
         {
             sprite.sprite = weak;
+        }
+    }
+
+    void ShowReward()
+    {
+        if(rewards != null)
+        {
+            currentParent = transform.parent.gameObject;
+            Vector3 offset = new Vector3(0, transform.localScale.y/2,0);
+            GameObject reward = Instantiate(rewards,transform.position - offset,Quaternion.identity);
+            reward.transform.SetParent(currentParent.transform, worldPositionStays: true);
         }
     }
 }
