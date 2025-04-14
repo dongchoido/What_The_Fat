@@ -12,7 +12,7 @@ public class LoopingParallax : MonoBehaviour
         length = GetComponent<SpriteRenderer>().bounds.size.x;
     }
 
-    void Update()
+    void LateUpdate()
     {
         float speed = GameManager.Instance.scrollSpeed * parallaxFactor;
         transform.position += Vector3.left * speed * Time.deltaTime;
