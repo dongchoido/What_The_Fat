@@ -47,8 +47,29 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Back Ground
+    uniqueID: 401687521
+    locked: 0
+  - name: Cloud1
+    uniqueID: 1200017699
+    locked: 0
+  - name: Far
+    uniqueID: 3732687957
+    locked: 0
+  - name: Cloud2
+    uniqueID: 1769026167
+    locked: 0
+  - name: Tree
+    uniqueID: 2365238939
+    locked: 0
+  - name: Near
+    uniqueID: 48304977
+    locked: 0
   - name: Ground
     uniqueID: 4181407797
+    locked: 0
+  - name: Object
+    uniqueID: 1617308929
     locked: 0
   - name: Player
     uniqueID: 3150513437
