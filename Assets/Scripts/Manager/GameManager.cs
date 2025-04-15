@@ -270,4 +270,5 @@ public class GameManager : MonoBehaviour
 {
     catHistoryText.text = "" + catHistory;
 }
+
 }

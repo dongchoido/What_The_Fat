@@ -39,6 +39,7 @@ public class HighScoreManager : MonoBehaviour
             PlayerPrefs.Save();
         }
         UpdateHighScoreText();
+       // ResetHighScore();
     }
 
     public void TrySetNewHighScore(int newScore)
