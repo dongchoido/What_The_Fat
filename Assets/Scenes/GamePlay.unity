@@ -4230,7 +4230,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2098467924
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4321,6 +4321,10 @@ PrefabInstance:
     - target: {fileID: 219731150122870091, guid: 8d3d40ff1068c1c4b97318fd0a3157f7, type: 3}
       propertyPath: m_Name
       value: SettingPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 219731150122870091, guid: 8d3d40ff1068c1c4b97318fd0a3157f7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 727899620109082228, guid: 8d3d40ff1068c1c4b97318fd0a3157f7, type: 3}
       propertyPath: m_AnchorMax.y
