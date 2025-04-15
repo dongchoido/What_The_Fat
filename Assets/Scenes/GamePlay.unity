@@ -4214,7 +4214,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2098467924
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4295,7 +4295,9 @@ CanvasRenderer:
   m_GameObject: {fileID: 2098467923}
   m_CullTransparentMesh: 1
 
+
 --- !u!1001 &7437528730023758015
+
 
 PrefabInstance:
   m_ObjectHideFlags: 0
