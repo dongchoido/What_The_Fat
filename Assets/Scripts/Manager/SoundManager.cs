@@ -15,6 +15,8 @@ public class SoundManager : MonoBehaviour
     public AudioClip deathClip;
 
     public AudioClip coinClip;
+    public bool isSFXEnabled = true; // gán bởi Pause.cs
+
     void Awake()
     {
         // Singleton pattern
@@ -31,12 +33,13 @@ public class SoundManager : MonoBehaviour
 
     // Play one-shot sound effect
     public void PlaySFX(AudioClip clip)
+{
+    if (clip != null && sfxSource != null && isSFXEnabled && sfxSource.volume > 0f)
     {
-        if (clip != null && sfxSource != null)
-        {
-            sfxSource.PlayOneShot(clip);
-        }
+        sfxSource.PlayOneShot(clip);
     }
+}
+    
 
     // Play background music (loop)
     public void PlayBGM(AudioClip music)
@@ -57,6 +60,29 @@ public class SoundManager : MonoBehaviour
             bgmSource.Stop();
         }
     }
+
+    public void SyncSettingsFromPrefs()
+{
+    bool bgmOn = PlayerPrefs.GetInt("BGMEnabled", 1) == 1;
+    float bgmVolume = PlayerPrefs.GetFloat("BGMVolume", 1f);
+
+    bool sfxOn = PlayerPrefs.GetInt("SFXEnabled", 1) == 1;
+    float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
+
+    if (bgmSource != null)
+    {
+        bgmSource.volume = bgmOn ? bgmVolume : 0f;
+    }
+
+    isSFXEnabled = sfxOn;
+
+    if (sfxSource != null)
+    {
+        float db = Mathf.Log10(Mathf.Clamp(sfxVolume, 0.0001f, 1f)) * 20f;
+        sfxSource.outputAudioMixerGroup.audioMixer.SetFloat("SFXVolume", db);
+    }
+}
+
 
     // Convenience methods (optional)
     public void PlayJumpSound() => PlaySFX(jumpClip);
