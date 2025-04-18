@@ -838,6 +838,10 @@ MonoBehaviour:
   - {fileID: 6260219384464231388, guid: a4fd09a64f2529548bf988c81833e9f4, type: 3}
   - {fileID: 1666335306857479484, guid: 18ed8e5fc596eca458563cece97220e9, type: 3}
   - {fileID: 8997251666247656541, guid: e35db6aac10b6f34287848721491ac95, type: 3}
+  - {fileID: 2707071529437459242, guid: b0b13230a32f67d478f1f8d2a7601bb0, type: 3}
+  - {fileID: 4653801559280526385, guid: 1399769545628ce429f37998dcfc77f7, type: 3}
+  - {fileID: 9162832048450301343, guid: baa070ab0dd411746a29f19a88b8cd3b, type: 3}
+  - {fileID: 5453123697816000107, guid: 2e6380135e833b74e82406e4b23e35a2, type: 3}
   spawnThreshold: 117
   lastSpawnedGround: {fileID: 7699983073228235347}
   distance: 0
@@ -2743,17 +2747,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4185971757062970629, guid: a4fd09a64f2529548bf988c81833e9f4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 57.36
+      objectReference: {fileID: 0}
     - target: {fileID: 6260219384464231388, guid: a4fd09a64f2529548bf988c81833e9f4, type: 3}
       propertyPath: m_Name
       value: map 2
       objectReference: {fileID: 0}
     - target: {fileID: 8011215327528218959, guid: a4fd09a64f2529548bf988c81833e9f4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.17947674
+      value: -0.89
       objectReference: {fileID: 0}
     - target: {fileID: 8011215327528218959, guid: a4fd09a64f2529548bf988c81833e9f4, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.1205132
+      value: -2.08
       objectReference: {fileID: 0}
     - target: {fileID: 8011215327528218959, guid: a4fd09a64f2529548bf988c81833e9f4, type: 3}
       propertyPath: m_LocalPosition.z
