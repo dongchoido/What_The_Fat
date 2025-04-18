@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class SoundManager : MonoBehaviour
 {
@@ -13,17 +14,19 @@ public class SoundManager : MonoBehaviour
     public AudioClip shootClip;
     public AudioClip spawnClip;
     public AudioClip deathClip;
-
     public AudioClip coinClip;
-    public bool isSFXEnabled = true; // gán bởi Pause.cs
+
+    public AudioMixer audioMixer; // chứa exposed param: "SFXVolume"
+
+    public bool isSFXEnabled = true;
 
     void Awake()
     {
-        // Singleton pattern
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // Giữ lại qua các scene
+            DontDestroyOnLoad(gameObject);
+            SyncSettingsFromPrefs();
         }
         else
         {
@@ -31,17 +34,14 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    // Play one-shot sound effect
     public void PlaySFX(AudioClip clip)
-{
-    if (clip != null && sfxSource != null && isSFXEnabled && sfxSource.volume > 0f)
     {
-        sfxSource.PlayOneShot(clip);
+        if (clip != null && sfxSource != null && isSFXEnabled && sfxSource.volume > 0f)
+        {
+            sfxSource.PlayOneShot(clip);
+        }
     }
-}
-    
 
-    // Play background music (loop)
     public void PlayBGM(AudioClip music)
     {
         if (bgmSource != null && music != null)
@@ -52,7 +52,6 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    // Stop BGM
     public void StopBGM()
     {
         if (bgmSource != null)
@@ -62,29 +61,28 @@ public class SoundManager : MonoBehaviour
     }
 
     public void SyncSettingsFromPrefs()
-{
-    bool bgmOn = PlayerPrefs.GetInt("BGMEnabled", 1) == 1;
-    float bgmVolume = PlayerPrefs.GetFloat("BGMVolume", 1f);
-
-    bool sfxOn = PlayerPrefs.GetInt("SFXEnabled", 1) == 1;
-    float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
-
-    if (bgmSource != null)
     {
-        bgmSource.volume = bgmOn ? bgmVolume : 0f;
+        bool bgmOn = PlayerPrefs.GetInt("BGMEnabled", 1) == 1;
+        float bgmVolume = PlayerPrefs.GetFloat("BGMVolume", 0.5f);
+
+        bool sfxOn = PlayerPrefs.GetInt("SFXEnabled", 1) == 1;
+        float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
+
+        if (bgmSource != null)
+        {
+            bgmSource.volume = bgmOn ? bgmVolume : 0f;
+        }
+
+        isSFXEnabled = sfxOn;
+
+        if (audioMixer != null)
+        {
+            float db = Mathf.Log10(Mathf.Clamp(sfxOn ? sfxVolume : 0.0001f, 0.0001f, 1f)) * 20f;
+            audioMixer.SetFloat("SFXVolume", db);
+        }
     }
 
-    isSFXEnabled = sfxOn;
-
-    if (sfxSource != null)
-    {
-        float db = Mathf.Log10(Mathf.Clamp(sfxVolume, 0.0001f, 1f)) * 20f;
-        sfxSource.outputAudioMixerGroup.audioMixer.SetFloat("SFXVolume", db);
-    }
-}
-
-
-    // Convenience methods (optional)
+    // Convenience methods
     public void PlayJumpSound() => PlaySFX(jumpClip);
     public void PlayShootSound() => PlaySFX(shootClip);
     public void PlaySpawnSound() => PlaySFX(spawnClip);

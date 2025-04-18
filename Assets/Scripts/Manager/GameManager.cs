@@ -47,7 +47,10 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        if (Instance == null) Instance = this;
+        if (Instance == null) 
+        {Instance = this;
+      //  DontDestroyOnLoad(gameObject);
+        }
         else Destroy(gameObject);
     }
 
@@ -59,6 +62,7 @@ public class GameManager : MonoBehaviour
         UpdateCoinList();
         catHistory = players.Length;
         UpdateCatHistory();
+       // SoundManager.Instance.SyncSettingsFromPrefs();
     }
 
     void Update()
@@ -136,7 +140,7 @@ public class GameManager : MonoBehaviour
     void UpdateGoldUI()
     {
         if (goldText != null)
-            goldText.text = "Gold: " + currentGold;
+            goldText.text = "" + currentGold;
     }
 
     void UpdateCatUI()
