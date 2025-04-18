@@ -42,6 +42,9 @@ public class PlayerMovement : MonoBehaviour
     private float flashInterval = 0.1f;
     private float flashTimer = 0f;
 
+    public Animator anim;
+    
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -81,6 +84,8 @@ void OnDrawGizmos()
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, rayDistance, groundLayer);
         isTouchingMonster = Physics2D.OverlapCircle(forwardCheck.position, rayDistance, monsterLayer) ||
                             Physics2D.OverlapCircle(forwardCheck.position, rayDistance, groundLayer);
+
+        anim.SetBool("isGrounded",isGrounded);
         if (isGrounded && !isHoldingJump)
         {
             reachedMaxHeight = false;

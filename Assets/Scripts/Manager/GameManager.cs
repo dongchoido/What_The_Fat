@@ -47,7 +47,10 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        if (Instance == null) Instance = this;
+        if (Instance == null) 
+        {Instance = this;
+      //  DontDestroyOnLoad(gameObject);
+        }
         else Destroy(gameObject);
     }
 
@@ -59,6 +62,7 @@ public class GameManager : MonoBehaviour
         UpdateCoinList();
         catHistory = players.Length;
         UpdateCatHistory();
+       // SoundManager.Instance.SyncSettingsFromPrefs();
     }
 
     void Update()
@@ -67,17 +71,39 @@ public class GameManager : MonoBehaviour
 
         PlayerMovement leader = players[0].GetComponent<PlayerMovement>();
         if (leader == null) return;
-       if (Input.GetKeyDown(KeyCode.Space) && leader.IsGrounded())
-        {
-            leader.StartJump();
-            BroadcastJump(leader);
-        }
-      
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            leader.StopJump();
-            BroadcastFall(leader);
-        }
+       bool isJumpPressed = false;
+    bool isJumpReleased = false;
+
+    // PC: dùng phím Space
+    if (Input.GetKeyDown(KeyCode.Space))
+        isJumpPressed = true;
+    if (Input.GetKeyUp(KeyCode.Space))
+        isJumpReleased = true;
+
+    // Mobile: dùng touch
+    if (Input.touchCount > 0)
+    {
+        Touch touch = Input.GetTouch(0);
+
+        if (touch.phase == TouchPhase.Began)
+            isJumpPressed = true;
+        else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
+            isJumpReleased = true;
+    }
+
+    // Thực hiện nhảy
+    if (isJumpPressed && leader.IsGrounded())
+    {
+        leader.StartJump();
+        BroadcastJump(leader);
+    }
+
+    // Thực hiện ngừng nhảy (rơi xuống)
+    if (isJumpReleased)
+    {
+        leader.StopJump();
+        BroadcastFall(leader);
+    }
         caculateJumpDelay();
     }
 
@@ -136,7 +162,7 @@ public class GameManager : MonoBehaviour
     void UpdateGoldUI()
     {
         if (goldText != null)
-            goldText.text = "Gold: " + currentGold;
+            goldText.text = "" + currentGold;
     }
 
     void UpdateCatUI()
@@ -270,4 +296,5 @@ public class GameManager : MonoBehaviour
 {
     catHistoryText.text = "" + catHistory;
 }
+
 }

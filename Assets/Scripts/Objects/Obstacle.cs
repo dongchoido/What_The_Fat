@@ -4,7 +4,7 @@ public class Obstacle : MonoBehaviour
 {
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject sprite;
-    [SerializeField] private BoxCollider2D boxCollider;
+    [SerializeField] private CircleCollider2D boxCollider;
     [SerializeField] private bool isExplosive = true;
 
     private bool hasExploded = false;
@@ -46,7 +46,7 @@ public class Obstacle : MonoBehaviour
 
         // Âm thanh/hiệu ứng nổ nếu có
 
-        Invoke(nameof(DestroySelf), 1f);
+        DestroySelf();
     }
 
     void DestroySelf()

@@ -5,25 +5,34 @@ using UnityEngine.EventSystems;
 
 public class Pause : MonoBehaviour
 {
-    public GameObject pauseMenuUI;      // Gán panel vào đây trong Inspector
-    public Button pauseButton;          // Gán nút Pause trong Inspector
+    public GameObject pauseMenuUI;
+    public Button pauseButton;
+    public Button settingButton;
+
+    public Toggle bgmToggle;
+    public Toggle sfxToggle;
 
     public static bool isPaused = false;
+
+    private void Start()
+    {
+        isPaused = false;
+        bgmToggle.isOn = PlayerPrefs.GetInt("BGMEnabled", 1) == 1;
+        sfxToggle.isOn = PlayerPrefs.GetInt("SFXEnabled", 1) == 1;
+
+        bgmToggle.onValueChanged.AddListener(OnBGMToggleChanged);
+        sfxToggle.onValueChanged.AddListener(OnSFXToggleChanged);
+
+        SoundManager.Instance?.SyncSettingsFromPrefs();
+    }
 
     public void TogglePause()
     {
         isPaused = !isPaused;
-
         Time.timeScale = isPaused ? 0f : 1f;
         pauseMenuUI.SetActive(isPaused);
-
-        // Khóa hoặc mở lại nút Pause
         if (pauseButton != null)
-        {
             pauseButton.interactable = !isPaused;
-        }
-
-        // Xóa focus khỏi nút Pause để tránh bị kích hoạt lại khi nhấn Space
         EventSystem.current.SetSelectedGameObject(null);
     }
 
@@ -32,26 +41,31 @@ public class Pause : MonoBehaviour
         isPaused = false;
         Time.timeScale = 1f;
         pauseMenuUI.SetActive(false);
-
-        // Mở lại nút Pause
         if (pauseButton != null)
-        {
             pauseButton.interactable = true;
-        }
-
-        // Xóa focus khỏi bất kỳ nút UI nào
         EventSystem.current.SetSelectedGameObject(null);
     }
 
     public void GoToMainMenu()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene("MenuScene"); // Đổi thành tên scene menu của bạn
+        if (pauseButton != null)
+            pauseButton.interactable = true;
+        pauseMenuUI.SetActive(false);
+        SceneManager.LoadScene("MenuScene");
     }
 
-    public void OpenSettings()
+    private void OnBGMToggleChanged(bool isOn)
     {
-        Debug.Log("Open settings panel (sẽ làm sau)");
-        // Gắn logic mở bảng cài đặt tại đây
+        Debug.Log("BGM Toggle: " + isOn);
+        PlayerPrefs.SetInt("BGMEnabled", isOn ? 1 : 0);
+        SoundManager.Instance?.SyncSettingsFromPrefs();
+    }
+
+    private void OnSFXToggleChanged(bool isOn)
+    {
+        Debug.Log("SFX Toggle: " + isOn);
+        PlayerPrefs.SetInt("SFXEnabled", isOn ? 1 : 0);
+        SoundManager.Instance?.SyncSettingsFromPrefs();
     }
 }

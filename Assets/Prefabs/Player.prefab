@@ -186,6 +186,7 @@ MonoBehaviour:
   isGrounded: 0
   isTouchingMonster: 0
   isHoldingJump: 0
+  anim: {fileID: 5844054035359903086}
 --- !u!114 &7024069479618610992
 MonoBehaviour:
   m_ObjectHideFlags: 0
