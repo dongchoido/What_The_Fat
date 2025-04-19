@@ -210,6 +210,7 @@ public class GameManager : MonoBehaviour
         gameOver.gameOver();
         Time.timeScale = 0;
     }
+    SoundManager.Instance.PlayDeathSound();
     Destroy(player);
     UpdateCatUI();
 }

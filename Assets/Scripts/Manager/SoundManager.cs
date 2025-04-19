@@ -15,7 +15,6 @@ public class SoundManager : MonoBehaviour
     public AudioClip spawnClip;
     public AudioClip deathClip;
     public AudioClip coinClip;
-
     public AudioMixer audioMixer; // chứa exposed param: "SFXVolume"
 
     public bool isSFXEnabled = true;
@@ -88,4 +87,5 @@ public class SoundManager : MonoBehaviour
     public void PlaySpawnSound() => PlaySFX(spawnClip);
     public void PlayDeathSound() => PlaySFX(deathClip);
     public void PlayCoinSound() => PlaySFX(coinClip);
+
 }

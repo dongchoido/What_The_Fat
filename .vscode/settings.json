@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "What The Fat - Copy (2).sln"
+    "dotnet.defaultSolution": "What_The_Fat.sln"
 }
