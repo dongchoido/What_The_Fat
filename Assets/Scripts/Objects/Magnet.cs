@@ -16,6 +16,7 @@ public class Magnet : MonoBehaviour
             GameManager.Instance.setMagnetTimer();
             Destroy(gameObject);
         }
+            SoundManager.Instance.PlayMagnetSound();
 
     }
 }

@@ -3,7 +3,17 @@ guid: 2eafd4da9eb8a9c4b97ade9bf545117f
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - sfxSource: {instanceID: 0}
+  - bgmSource: {instanceID: 0}
+  - bombClip: {fileID: 8300000, guid: c47e832a574bfaf40a05cd32fa386f55, type: 3}
+  - magnetClip: {instanceID: 0}
+  - jumpClip: {instanceID: 0}
+  - shootClip: {instanceID: 0}
+  - spawnClip: {instanceID: 0}
+  - deathClip: {instanceID: 0}
+  - coinClip: {instanceID: 0}
+  - audioMixer: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
