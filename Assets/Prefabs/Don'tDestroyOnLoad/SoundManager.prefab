@@ -176,11 +176,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sfxSource: {fileID: 5469400047289110824}
   bgmSource: {fileID: 0}
+  bombClip: {fileID: 8300000, guid: 68d52a6abd87e454f8db41d3fdfad193, type: 3}
+  magnetClip: {fileID: 8300000, guid: a8c4a1d4590ef8c47abb736cd5f340f8, type: 3}
   jumpClip: {fileID: 8300000, guid: 80947e1d071b39645826949cc77004b6, type: 3}
   shootClip: {fileID: 8300000, guid: ed3284e6246a48d4db044cd3377d121a, type: 3}
   spawnClip: {fileID: 8300000, guid: 942907f6fec68e54786cae190ed53de2, type: 3}
-  deathClip: {fileID: 0}
+  deathClip: {fileID: 8300000, guid: db1a133b27e218040b1a68cc6e987129, type: 3}
   coinClip: {fileID: 8300000, guid: ca381c7413ed06c48ad6c20464415666, type: 3}
+  audioMixer: {fileID: 0}
   isSFXEnabled: 1
 --- !u!82 &5469400047289110824
 AudioSource:
@@ -192,7 +195,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 8932326001388584510, guid: a80849647cfc1424a936bd8c0c50e607, type: 2}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: c96bd28bed48721478aea26ca5ecc5fd, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -200,7 +203,7 @@ AudioSource:
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 46
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500

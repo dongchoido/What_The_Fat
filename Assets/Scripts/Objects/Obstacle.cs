@@ -45,6 +45,7 @@ public class Obstacle : MonoBehaviour
             boxCollider.enabled = false;
 
         // Âm thanh/hiệu ứng nổ nếu có
+        SoundManager.Instance.PlayBombSound();
 
         DestroySelf();
     }

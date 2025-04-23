@@ -10,6 +10,8 @@ public class SoundManager : MonoBehaviour
     public AudioSource bgmSource;
 
     [Header("Audio Clips")]
+    public AudioClip bombClip;
+    public AudioClip magnetClip;
     public AudioClip jumpClip;
     public AudioClip shootClip;
     public AudioClip spawnClip;
@@ -87,5 +89,7 @@ public class SoundManager : MonoBehaviour
     public void PlaySpawnSound() => PlaySFX(spawnClip);
     public void PlayDeathSound() => PlaySFX(deathClip);
     public void PlayCoinSound() => PlaySFX(coinClip);
+    public void PlayBombSound() => PlaySFX(bombClip);
+    public void PlayMagnetSound() => PlaySFX(magnetClip);
 
 }
